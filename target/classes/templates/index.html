@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,13 +7,25 @@
     <title>Document</title>
 </head>
 <body>
-    <div class ="container">
-        <form th:action="@{/login}" th:object = "${login}" method="get">
-            <input type="text" th:field="*{id}" placeholder="아이디" >
-            <input type="text" th:field="*{password}" placeholder="비밀번호" >
-
-            <button type="submit">로그인</button>
+        <form th:action="@{/gameIn}"  method="post" >
+            <button type="submit">빠른대전</button>
         </form>
-    </div>
+
+        <form th:action="@{/routemakeroom}" method="post" >
+            <button type="submit">방만들기</button>
+        </form>
+
+
+        <div th:each="rooms : ${rooms}" style="border: 1px solid black">
+            <h5 th:text="${rooms.roomName}"></h5>
+            <h5 th:text="${rooms.roomNum}"></h5>
+            <h5 th:text="${rooms.firstUser.userName}"></h5>
+            <form th:action="@{/specificroom}"  method="post">
+                <input type="text" th:field="${roomInUser.userName}" placeholder="게임에 참가할 이름을 입력하세요">
+                <input type="hidden" name="roomNum" th:value="${rooms.roomNum}" placeholder="방 제목">
+                <button type="submit" >입장하기</button>
+            </form>
+        </div>
+
 </body>
 </html>
