@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form th:action="@{/makeroom}" th:object="${roomInUser}" method="post">
+        <input type="text" th:field="*{userName}" placeholder="이름">
+        <input type="text" th:field="*{roomName}" value="방 제목">
+    <button type="submit" >방 만들기</button>
+</form>
+
+
+
+</body>
+</html>
