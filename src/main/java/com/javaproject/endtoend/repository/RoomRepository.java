@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomRepository  extends JpaRepository<Room, Long> {
-    int countByFroomsearching(int isSearching);
+    int countByFRoomSearching(int isSearching);
 
 
-    Optional<Room> findOneByFroomsearching(int isSearching);
+    Optional<Room> findOneByFRoomSearching(int isSearching);
 
-    List<Room> findByFroomsearching(int isSearching);
+    List<Room> findByFRoomSearching(int isSearching);
     List<Room> findAll();
 
     Room findByRoomNum(int room_num);

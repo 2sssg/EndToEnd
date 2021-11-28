@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long room_id;
+    private Long roomId;
 
     @Column
     private String roomName;
@@ -24,7 +24,7 @@ public class Room {
     private int roomNum;
 
     @Column
-    private int froomsearching;
+    private int fRoomSearching;
 
     @JoinColumn(name = "firstUserId")
     @OneToOne(fetch = FetchType.LAZY  , cascade = CascadeType.ALL)
