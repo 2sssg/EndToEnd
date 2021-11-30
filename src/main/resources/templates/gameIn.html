@@ -16,6 +16,8 @@
         <div class="container">
             <div class="col-6">
                 <h1 id="nowstatus">상대방을 기다리는중....</h1>
+                <div th:if="${room.secondUser}==null" th:text="|남은 목숨 : ${room.firstUserLife}|"></div>
+                <div th:if="${room.secondUser}!=null" th:text="|남은 목숨 : ${room.secondUserLife}|"></div>
             </div>
             <div>
                 <div id="msgArea" class="col"></div>
@@ -32,14 +34,17 @@
         </div>
 
 
-        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
 
     </th:block>
 </th:block>
 
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script th:inline="javascript">
     $(document).ready(function(){
+        var beforeMessage ='';
         console.log("sssssda");
         var roomid = [[${room.roomNum}]];
         console.log(roomid);
@@ -48,7 +53,7 @@
 
         stomp.connect({},function(){
             var user = '';
-            var isStart = [[${room.froomsearching}]]
+            var isStart = [[${room.roomFlag}]]
             console.log("stomp connection!");
 
 
@@ -63,24 +68,36 @@
 
 
             stomp.subscribe("/sub/chat/room/"+roomid, function(chat){
-                if($('#msg').is(":disabled")){
-                    console.log("안보이다가 보여야됨");
-                    $('#msg').removeAttr("disabled");
-                    $('#button-send').css("display","block");
+                console.log(chat);
+                const content = JSON.parse(chat.body);
+                var message = content.msg;
+                const flag = content.flag;
+                if(flag ==="true"){
+                    $('#nowstatus').text("ㅋㅋ굿 씹년아 ㅋㅋ");
+
+                    if($('#msg').is(":disabled")){
+                        console.log("안보이다가 보여야됨");
+                        $('#msg').removeAttr("disabled");
+                        $('#button-send').css("display","block");
+                    }else{
+                        console.log("보이다가 안보여야됨")
+                        $('#msg').attr("disabled", true);
+                        $('#button-send').css("display","none");
+                    }
+                    beforeMessage = message;
+                    console.log("chat : "+ chat);
+                    console.log("content : "+beforeMessage);
+                    $('#msgArea').append(beforeMessage +"<br>");
                 }else{
-                    console.log("보이다가 안보여야됨")
-                    $('#msg').attr("disabled", true);
-                    $('#button-send').css("display","none");
+                    $('#nowstatus').text("ㄲㅈ 제대로 ㄱ");
+                    $('#msgArea').append("<span style='color: red'>"+message +"<br></span>");
                 }
-                console.log("chat : "+ chat);
-                var content = JSON.parse(chat.body);
-                var message = JSON.parse(content.msg)
-                console.log("content : "+message.message);
-                $('#msgArea').append(message.message +"<br>");
+
+
             })
 
 
-            if(isStart == 0){
+            if(isStart === 0){
                 user = '2';
                 stomp.send('/pub/chat/room/statuschange/'+roomid,{},JSON.stringify({tmp:"tmp"}));
                 $('#msg').attr("disabled", true);
@@ -93,10 +110,9 @@
         });
 
         $('#button-send').on('click',function(e){
-            var msg = document.getElementById("msg");
+            let msg = document.getElementById("msg");
             console.log(msg);
-
-            stomp.send('/pub/chat/message/'+roomid, {}, JSON.stringify({message : msg.value}));
+            stomp.send('/pub/chat/message/'+roomid, {}, JSON.stringify({message : msg.value, beforeMessage:beforeMessage}));
             msg.value = null;
             msg = '';
         });

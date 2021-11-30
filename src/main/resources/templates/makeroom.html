@@ -9,7 +9,7 @@
 <body>
 <form th:action="@{/makeroom}" th:object="${roomInUser}" method="post">
         <input type="text" th:field="*{userName}" placeholder="이름">
-        <input type="text" th:field="*{roomName}" value="방 제목">
+        <input type="text" th:field="*{roomName}" value="방 제목" placeholder="방제목">
     <button type="submit" >방 만들기</button>
 </form>
 

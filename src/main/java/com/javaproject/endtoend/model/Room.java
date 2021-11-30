@@ -24,7 +24,7 @@ public class Room {
     private int roomNum;
 
     @Column
-    private int fRoomSearching;
+    private int roomFlag;
 
     @JoinColumn(name = "firstUserId")
     @OneToOne(fetch = FetchType.LAZY  , cascade = CascadeType.ALL)
@@ -35,4 +35,9 @@ public class Room {
     private User secondUser;
 
 
+    @Column
+    private int firstUserLife;
+
+    @Column
+    private int secondUserLife;
 }

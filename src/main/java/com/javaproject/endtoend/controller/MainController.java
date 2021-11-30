@@ -35,7 +35,7 @@ public class MainController {
     @RequestMapping()
     public String mainController(Model model){
 
-        List<Room> rooms = roomRepository.findByFRoomSearching(1);
+        List<Room> rooms = roomRepository.findByRoomFlag(1);
         model.addAttribute("rooms",rooms);
 
         model.addAttribute("roomInUser",new RoomInUser());
@@ -49,15 +49,17 @@ public class MainController {
         Room room;
         user.setUserName("임시");
         System.out.println("gameIn");
-        if(roomRepository.countByFRoomSearching(1)>0){
-            room = roomRepository.findOneByFRoomSearching(1).orElseThrow();
-            room.setFRoomSearching(0);
+        if(roomRepository.countByRoomFlag(1)>0){
+            room = roomRepository.findOneByRoomFlag(1).orElseThrow();
+            room.setRoomFlag(0);
             room.setSecondUser(user);
         }else{
             room = Room.builder()
-                    .fRoomSearching(1)
+                    .roomFlag(1)
                     .roomNum(new Date().hashCode())
                     .firstUser(user)
+                    .firstUserLife(100)
+                    .secondUserLife(100)
                     .build();
         }
         userRepository.save(user);
@@ -83,10 +85,12 @@ public class MainController {
                 .build();
 
         Room room = Room.builder()
-                .fRoomSearching(1)
+                .roomFlag(1)
                 .roomName(roomInUser.getRoomName())
                 .roomNum(new Date().hashCode())
                 .firstUser(user)
+                .firstUserLife(100)
+                .secondUserLife(100)
                 .build();
 
         userRepository.save(user);
@@ -109,7 +113,7 @@ public class MainController {
 
         Room room = roomRepository.findByRoomNum(roomInUser.getRoomNum());
         room.setSecondUser(user);
-        room.setFRoomSearching(0);
+        room.setRoomFlag(0);
         userRepository.save(user);
         roomRepository.save(room);
         model.addAttribute(room);

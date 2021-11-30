@@ -4,6 +4,8 @@ package com.javaproject.endtoend.controller;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -24,12 +26,24 @@ public class StompController {
     @Autowired
     private final SimpMessageSendingOperations messagingTemplate;
 
-    @MessageMapping("/chat/message/{roomid}")
-    public void chat(String msg,@DestinationVariable int roomid){
-        System.out.println("여기들어옴");
+    APIcontroller apicontroller = new APIcontroller();
 
+    @MessageMapping("/chat/message/{roomid}")
+    public void chat(JSONObject jsonObject, @DestinationVariable int roomid){
+        System.out.println("여기들어옴");
+        boolean flag =true;
+        String beforeMessage =jsonObject.get("beforeMessage").toString();
+        String message = jsonObject.get("message").toString();
+
+        apicontroller.tmp(message);
+        if(!beforeMessage.equals("")){
+            System.out.println("씹년아!!!!!!!!!!!!!!!"+beforeMessage);
+            flag =beforeMessage.substring(beforeMessage.length() - 1).equals(message.substring(0, 1));
+        }
         Map<String, String> returnmap = new HashMap<>();
-        returnmap.put("msg", msg);
+        returnmap.put("msg", message);
+        returnmap.put("flag",flag?"true":"false");
+        returnmap.put("dicResult",apicontroller.tmp(message));
         messagingTemplate.convertAndSend("/sub/chat/room/"+roomid, returnmap);
     }
 
