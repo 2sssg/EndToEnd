@@ -66,7 +66,6 @@ public class MainController {
         roomRepository.save(room);
         model.addAttribute("room", room);
 
-        System.out.println("dddddd");
         return "gameIn";
     }
 
@@ -111,7 +110,7 @@ public class MainController {
                 .userName(roomInUser.getUserName())
                 .build();
 
-        Room room = roomRepository.findByRoomNum(roomInUser.getRoomNum());
+        Room room = roomRepository.findByRoomNum(roomInUser.getRoomNum()).orElse(new Room());
         room.setSecondUser(user);
         room.setRoomFlag(0);
         userRepository.save(user);

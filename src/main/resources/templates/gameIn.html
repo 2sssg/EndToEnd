@@ -45,7 +45,6 @@
 <script th:inline="javascript">
     $(document).ready(function(){
         var beforeMessage ='';
-        console.log("sssssda");
         var roomid = [[${room.roomNum}]];
         console.log(roomid);
         var sockJs = new SockJS("/stomp/chat");
@@ -70,11 +69,8 @@
             stomp.subscribe("/sub/chat/room/"+roomid, function(chat){
                 console.log(chat);
                 const content = JSON.parse(chat.body);
-                var message = content.msg;
-                const flag = content.flag;
-                if(flag ==="true"){
-                    $('#nowstatus').text("ㅋㅋ굿 씹년아 ㅋㅋ");
-
+                const flag = content.success;
+                if(flag){
                     if($('#msg').is(":disabled")){
                         console.log("안보이다가 보여야됨");
                         $('#msg').removeAttr("disabled");
@@ -84,13 +80,16 @@
                         $('#msg').attr("disabled", true);
                         $('#button-send').css("display","none");
                     }
-                    beforeMessage = message;
-                    console.log("chat : "+ chat);
+                    beforeMessage = content.responseOBJ.dicResult.word;
                     console.log("content : "+beforeMessage);
                     $('#msgArea').append(beforeMessage +"<br>");
+                    $('#nowstatus').text("단어 : "+content.responseOBJ.dicResult.word);
+                    $('#nowstatus').append("<br> 품사 : "+content.responseOBJ.dicResult.position);
+                    $('#nowstatus').append("<br> 정의 : "+content.responseOBJ.dicResult.definition);
+
                 }else{
-                    $('#nowstatus').text("ㄲㅈ 제대로 ㄱ");
-                    $('#msgArea').append("<span style='color: red'>"+message +"<br></span>");
+                    $('#nowstatus').text(content.errorContent);
+                    $('#msgArea').append("<span style='color: red'>"+content.responseOBJ.dicResult.word +"<br></span>");
                 }
 
 
@@ -112,7 +111,7 @@
         $('#button-send').on('click',function(e){
             let msg = document.getElementById("msg");
             console.log(msg);
-            stomp.send('/pub/chat/message/'+roomid, {}, JSON.stringify({message : msg.value, beforeMessage:beforeMessage}));
+            stomp.send('/pub/chat/message/'+roomid, {}, JSON.stringify({nowWord : msg.value, beforeWord:beforeMessage, roomNum:roomid}));
             msg.value = null;
             msg = '';
         });

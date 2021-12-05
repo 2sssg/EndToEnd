@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -40,4 +42,8 @@ public class Room {
 
     @Column
     private int secondUserLife;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "room", fetch = FetchType.LAZY)
+    private List<RoomContent> roomContents = new ArrayList<>();
+
 }
