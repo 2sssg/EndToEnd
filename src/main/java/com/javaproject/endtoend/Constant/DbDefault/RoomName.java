@@ -1,4 +1,4 @@
-package com.javaproject.endtoend.Constant;
+package com.javaproject.endtoend.Constant.DbDefault;
 
 public class RoomName {
     public static final String[] roomName ={

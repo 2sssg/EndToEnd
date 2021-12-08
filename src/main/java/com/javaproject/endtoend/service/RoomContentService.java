@@ -16,11 +16,10 @@ public class RoomContentService {
     RoomRepository roomRepository;
     @Autowired
     RoomContentRepository roomContentRepository;
-    public String saveOneWord(int roomnum, String word){
-        System.out.println(roomnum);
-        System.out.println(word);
-        System.out.println(roomContentRepository.countByRoom_RoomNumAndWord(roomnum,word)==0?"null":"notNull");
 
+    //단어 저장
+    public String saveOneWord(int roomnum, String word){
+        //중복 한번더 검사
         if(isOverlap(roomnum,word)){
             RoomContent roomContent = RoomContent.builder()
                     .room(roomRepository.findByRoomNum(roomnum).orElse(null))
@@ -37,10 +36,6 @@ public class RoomContentService {
     }
 
     public boolean isOverlap(int roomnum, String word){
-        if(roomContentRepository.countByRoom_RoomNumAndWord(roomnum,word) == 0){
-            return true;
-        }else{
-            return false;
-        }
+        return roomContentRepository.countByRoom_RoomNumAndWord(roomnum, word) == 0;
     }
 }

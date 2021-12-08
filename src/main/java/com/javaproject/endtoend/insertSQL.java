@@ -1,6 +1,6 @@
 package com.javaproject.endtoend;
 
-import com.javaproject.endtoend.Constant.PhoneticVar;
+import com.javaproject.endtoend.Constant.DbDefault.PhoneticVar;
 import com.javaproject.endtoend.model.PhoneticRule;
 import com.javaproject.endtoend.repository.PhoneticRepository;
 import org.springframework.beans.factory.annotation.Autowired;

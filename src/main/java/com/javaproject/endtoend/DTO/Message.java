@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Builder
 @Data
 public class Message {
-    @Autowired
-    RoomContentService roomContentService;
 
     private String beforeWord;
 

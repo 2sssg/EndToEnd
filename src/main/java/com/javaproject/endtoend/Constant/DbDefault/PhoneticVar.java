@@ -1,4 +1,4 @@
-package com.javaproject.endtoend.Constant;
+package com.javaproject.endtoend.Constant.DbDefault;
 
 public class PhoneticVar {
     public static final String[] phoneticValue ={

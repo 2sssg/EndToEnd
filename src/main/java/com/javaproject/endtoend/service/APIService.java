@@ -3,6 +3,7 @@ package com.javaproject.endtoend.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaproject.endtoend.DTO.koreanAPI.KoreanAPI;
 import com.javaproject.endtoend.DTO.koreanAPI.KoreanApiResponseDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -16,6 +17,8 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+
+@Slf4j
 public class APIService {
     public static JSONObject dictionary(String message){
         JSONObject returnJSON = new JSONObject();
@@ -26,7 +29,7 @@ public class APIService {
                     .q(message)
                     .req_type("json")
                     .build();
-            System.out.println("날리는 쿼리는 : "+query.toString());
+            log.info("날리는 쿼리는 : "+query.toString());
             URL url = new URL(query.toString());
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

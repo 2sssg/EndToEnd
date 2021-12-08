@@ -1,8 +1,7 @@
 package com.javaproject.endtoend.DTO.koreanAPI;
 
 
-import antlr.build.ANTLR;
-import com.javaproject.endtoend.Constant.ConstantKoreanAPI;
+import com.javaproject.endtoend.Constant.EnumV.ConstantKoreanAPI;
 import lombok.*;
 
 @Builder

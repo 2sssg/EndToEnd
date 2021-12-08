@@ -1,6 +1,5 @@
 package com.javaproject.endtoend.repository;
 
-import com.javaproject.endtoend.Constant.PhoneticVar;
 import com.javaproject.endtoend.model.PhoneticRule;
 import org.springframework.data.jpa.repository.JpaRepository;
 

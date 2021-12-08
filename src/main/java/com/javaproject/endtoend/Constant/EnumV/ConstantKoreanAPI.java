@@ -1,4 +1,4 @@
-package com.javaproject.endtoend.Constant;
+package com.javaproject.endtoend.Constant.EnumV;
 
 public enum ConstantKoreanAPI {
     APIKEY("B6CD0670ED60BEF217B146CEE4DF2CA5"),

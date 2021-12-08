@@ -1,4 +1,4 @@
-package com.javaproject.endtoend.Constant;
+package com.javaproject.endtoend.Constant.ClassV;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
