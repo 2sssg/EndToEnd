@@ -1,5 +1,6 @@
 package com.javaproject.endtoend.DTO;
 
+import com.javaproject.endtoend.model.Room;
 import com.javaproject.endtoend.service.APIService;
 import com.javaproject.endtoend.service.RoomContentService;
 import lombok.AllArgsConstructor;
@@ -23,9 +24,13 @@ public class Message {
 
     private int roomNum;
 
+    private RoomInUser roomInUser;
+
     private NowWordDictionaryInfo nowWordDictionaryInfo = new NowWordDictionaryInfo();
 
-
+    private boolean dic;
+    private boolean leg;
+    private boolean two;
 
     //게임의 시작인지 확인하는 메서드
     public boolean isStart(){
@@ -62,9 +67,11 @@ public class Message {
 
     //다 통과 했는지
     public boolean isAllLegal(){
-        return isLegalWord()
-                &&isOverTwoLength()
-                &&isDictionary();
+        this.dic = isDictionary();
+        this.leg = isLegalWord();
+        this.two = isOverTwoLength();
+
+        return dic&&leg&&two;
     }
 
 

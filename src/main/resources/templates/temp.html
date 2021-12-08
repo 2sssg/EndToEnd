@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Signin Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/1bootstrap.min.css" rel="stylesheet">
+    <link href="css/gameIn.css" rel="stylesheet">
+    <link href="css/_bootswaych.scss" rel="stylesheet">
+    <link href="css/_variables.scss" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+
+<div class="container" id="cont">
+    <div id="left-box">
+        <p th:text="${room.firstUser.userName}"></p>
+    </div>
+
+
+
+    <div id="main-box">
+
+        <div id="roomName">
+            <p th:text="|방 제목 : ${room.roomName}|"></p>
+        </div>
+        <div id="sex">
+            <div id="firstUserLife" th:text="|player1 남은 목숨 : ${room.firstUserLife}|"></div>
+            <div id="timer">타이머</div>
+            <div id="secondUserLife" th:text="|player2 남은 목숨 : ${room.secondUserLife}|"></div>
+        </div>
+        <br>
+        <div class="card" id="koreancard">
+            <div class="card-body" >
+                <p style="display: block" id="notice">상대방을 기다리는 중...</p>
+                <h4 class="card-title" style="display: none;" id="wordinfo"></h4>
+                <h6 class="card-subtitle mb-2 text-muted" style="display: none;" id="posinfo"></h6>
+                <p class="card-text" style="display: none;" id="realinfo"></p>
+            </div>
+        </div>
+        <input class="form-control form-control-lg" type="text" id="inputLarge">
+        <button type="button" class="btn btn-info" id="button-word">입력</button>
+    </div>
+
+
+
+    <div id="right-box">
+        <p th:text="${room.secondUser.userName}" th:if="${room.roomFlag}==0"></p>
+    </div>
+</div> <!-- /container -->
+
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:inline="javascript">
+    $(function(){
+        var beforeMessage ='';
+        var roomid = [[${room.roomNum}]];
+        var user = '';
+        var isStart = [[${room.roomFlag}]]
+
+        var sockJs = new SockJS("/stomp/chat");
+        var stomp = Stomp.over(sockJs);
+
+        var time = 10;
+        var timer;
+
+
+        stomp.connect({},function(){
+
+
+            if(isStart === 0){
+                user = '2';
+                stomp.send('/pub/chat/room/statuschange/'+roomid,{},JSON.stringify({tmp:"tmp"}));
+                $('#inputLarge').attr("disabled", true);
+                $('#button-word').hide();
+            }else{
+                $('#inputLarge').attr("disabled", true);
+                $('#button-word').hide();
+                user = '1';
+            }
+
+            stomp.subscribe("/sub/timeout/"+roomid, function(res){
+                var response = JSON.parse(res.body);
+                if(response.success){
+                    var firstUserLife = response.responseOBJ.roomDTO.firstUserLife;
+                    var secondUserLife = response.responseOBJ.roomDTO.secondUserLife;
+                    if(firstUserLife <=0){
+                        clearInterval(timer);
+                        if(user == 1){
+                            alert("ㅂㅅ 님이 짐");
+
+                        }else{
+                            alert("ㅊㅊ 님이 이김");
+                        }
+                    }else if(secondUserLife <= 0 ){
+                        clearInterval(timer);
+                        if(user == 2){
+                            alert("ㅂㅅ 님이 짐");
+                        }else{
+                            alert("ㅊㅊ 님이 이김");
+                        }
+                    }
+                    $('#firstUserLife').text("player1 남은 목숨 : "+response.responseOBJ.roomDTO.firstUserLife);
+                    $('#secondUserLife').text("player2 남은 목숨 : "+response.responseOBJ.roomDTO.secondUserLife);
+                }
+            })
+
+            stomp.subscribe("/sub/chat/room/statuschange/"+roomid, function(res){
+                var jres = JSON.parse(res.body);
+                console.log(jres.responseOBJ.room.secondUser.userName);
+                if(user == 1){
+                    $('#inputLarge').removeAttr("disabled");
+                    $('#button-word').show();
+                    $('#right-box').html("<p>"+jres.responseOBJ.room.secondUser.userName+"</p>");
+                }
+                console.log("가자!!!!!!!!!!!!!!!");
+                $('#notice').text("게임 스타트!");
+
+            })
+
+
+            stomp.subscribe("/sub/chat/room/"+roomid, function(chat){
+                console.log(chat);
+                const content = JSON.parse(chat.body);
+                const flag = content.success;
+                if(flag){
+                    time = 5;
+                    timer = setInterval(function(){
+                        $('#timer').text(time)
+                        time --;
+                        if(time < 0){
+                            time = 5;
+                            $('#timer').text("시간이 지났습니다. 생명력이 10 감소합니다.");
+                            if(!$('#inputLarge').is(":disabled")){
+                                stomp.send("/pub/timeout/"+roomid,{},JSON.stringify({
+                                    whatUser:user,
+                                }));
+                            }
+                        }
+                    },1000);
+                    if($('#inputLarge').is(":disabled")){ // 내차례x
+                        if(user==1){
+                            $('#left-box').append("<p>.</p>");
+                            $('#right-box').append("<p>"+content.responseOBJ.dicResult.word+"</p>");
+                        }else{
+                            $('#right-box').append("<p>.</p>");
+                            $('#left-box').append("<p>"+content.responseOBJ.dicResult.word+"</p>");
+                        }
+                        console.log("안보이다가 보여야됨");
+                        $('#inputLarge').removeAttr("disabled");
+                        $('#button-word').css("display","block");
+                    }else{
+                        if(user==2){
+                            $('#left-box').append("<p>.</p>");
+                            $('#right-box').append("<p>"+content.responseOBJ.dicResult.word+"</p>");
+                        }else{
+                            $('#right-box').append("<p>.</p>");
+                            $('#left-box').append("<p>"+content.responseOBJ.dicResult.word+"</p>");
+                        }
+                        console.log("보이다가 안보여야됨")
+                        $('#inputLarge').attr("disabled", true);
+                        $('#button-word').css("display","none");
+                    }
+                    beforeMessage = content.responseOBJ.dicResult.word;
+                    console.log("content : "+beforeMessage);
+
+                    $('#notice').css("display","none");
+
+                    $('#wordinfo').css("display","block");
+                    $('#wordinfo').text("단어 : "+content.responseOBJ.dicResult.word);
+                    $('#posinfo').css("display","block");
+                    $('#posinfo').html("<br> 품사 : "+content.responseOBJ.dicResult.position);
+                    $('#realinfo').css("display","block");
+                    $('#realinfo').html("<br> 정의 : "+content.responseOBJ.dicResult.definition);
+
+                }else{
+                    if(content.responseOBJ.roomInUser.userLife <= 0){
+                        clearInterval(timer);
+                        $('#inputLarge').attr("disabled", true);
+                        $('#button-word').css("display","none");
+                        if(content.responseOBJ.roomInUser.whatUser==user){
+                            alert("니가 짐 ㅋzzzzzzzzzzzzzzzzㅋ");
+
+                        }else{
+                            alert("ㅊㅊ 이김");
+                        }
+                    }else{
+                        time = 5;
+                        timer = setInterval(function(){
+                            $('#timer').text(time)
+                            time --;
+                            if(time < 0){
+                                time = 5;
+                                $('#timer').html("<p>시간이 지났습니다. 생명력이 10 감소합니다.</p>");
+                                if(!$('#inputLarge').is(":disabled")){
+                                    stomp.send("/pub/timeout/"+roomid,{},JSON.stringify({
+                                        whatUser:user,
+                                    }));
+                                }
+                            }
+                        },1000);
+                    }
+                    if(content.responseOBJ.roomInUser.whatUser===1){
+                        $('#firstUserLife').text('player1 남은 목숨 : '+content.responseOBJ.roomInUser.userLife);
+                        $('#rignt-box').append("<p> </p>")
+                        $('#left-box').append("<p style='color: red'>"+content.responseOBJ.dicResult.word +"<br></p>");
+
+                    }else{
+                        $('#secondUserLife').text('player2 남은 목숨 : '+content.responseOBJ.roomInUser.userLife);
+                        $('#left-box').append("<p> </p>")
+                        $('#right-box').append("<p style='color: red'>"+content.responseOBJ.dicResult.word +"<br></p>");
+                    }
+                    $('#wordinfo').css("display","none");
+                    $('#posinfo').css("display","none");
+                    $('#realinfo').css("display","none");
+                    $('#notice').css("display","block");
+                    $('#notice').text(content.errorContent);
+                }
+
+            })
+
+
+            stomp.subscribe("/sub/chat/room/timer/"+roomid, function() {
+                clearInterval(timer);
+            });
+
+
+
+
+        });
+
+        $('#button-word').on('click',function(e){
+            let msg = document.getElementById("inputLarge");
+            console.log(msg);
+
+            stomp.send('/pub/chat/message/'+roomid, {}, JSON.stringify(
+                {
+                    nowWord : msg.value,
+                    beforeWord:beforeMessage,
+                    roomNum:roomid,
+                    whatUser: user,
+                }));
+            msg.value = null;
+            msg = '';
+            stomp.send('/pub/timer/'+roomid,{},JSON.stringify({time:10}));
+        });
+
+
+
+    });
+
+
+    function gomain(){
+        $.ajax({
+            url:"/",
+            type: "GET"
+        })
+    }
+
+</script>
+</body>
+</html>

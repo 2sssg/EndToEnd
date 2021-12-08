@@ -29,11 +29,11 @@ public class Room {
     private int roomFlag;
 
     @JoinColumn(name = "firstUserId")
-    @OneToOne(fetch = FetchType.LAZY  , cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     private User firstUser;
 
     @JoinColumn(name = "secondUserId")
-    @OneToOne(fetch = FetchType.LAZY  , cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER  , cascade = CascadeType.ALL)
     private User secondUser;
 
 
@@ -43,7 +43,7 @@ public class Room {
     @Column
     private int secondUserLife;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "room", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "room", fetch = FetchType.EAGER)
     private List<RoomContent> roomContents = new ArrayList<>();
 
 }

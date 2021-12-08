@@ -1,0 +1,69 @@
+body{
+    padding:0;margin:0;
+}
+#cont{
+    max-width: 4000px;
+    width: 100vw;
+    height: 5000px;
+    padding:0;
+    margin:0;
+}
+
+#firstUserLife,#timer,#secondUserLife{
+    float: left;
+    width: 30%;
+    margin:auto;
+    display:block;
+    text-align: center;
+}
+#timer{
+    margin-left: 5%;
+    margin-right: 5%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: red;
+}
+#sex{
+    height: 100px;
+    width: 60%;
+    margin:auto;
+    display:block;
+}
+#cont>div{
+    float: left;
+    height: 100%;
+}
+#left-box{
+    width: 20%;
+}
+
+#main-box{
+    width: 60%;
+}
+#right-box{
+    width: 20%;
+}
+#button-word{
+    width:100px;
+    margin:auto;
+    display:block;
+}
+#inputLarge{
+    width: 300px;
+    margin:auto;
+    display:block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#koreancard{
+    background-color: sandybrown;
+    width:40%;
+    margin:auto;
+    display:block;
+}
+
+#roomName{
+    text-align: center;
+}

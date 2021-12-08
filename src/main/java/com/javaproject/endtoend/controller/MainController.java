@@ -1,12 +1,12 @@
 package com.javaproject.endtoend.controller;
 
+import com.javaproject.endtoend.Constant.RoomName;
 import com.javaproject.endtoend.DTO.RoomInUser;
 import com.javaproject.endtoend.model.Room;
 import com.javaproject.endtoend.model.User;
 import com.javaproject.endtoend.repository.RoomRepository;
 import com.javaproject.endtoend.repository.UserRepository;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @Controller
 @Service
+@Slf4j
 public class MainController {
 
     @Autowired
@@ -26,7 +28,6 @@ public class MainController {
 
     @Autowired
     UserRepository userRepository;
-
 
 
 
@@ -47,14 +48,20 @@ public class MainController {
     @RequestMapping(value = "/gameIn")
     public String loginController(User user, Model model){
         Room room;
-        user.setUserName("임시");
+        Date date = new Date();
+        int count=0;
+        for(int temp: Arrays.stream(String.valueOf(date.hashCode()<0?date.hashCode()*-1:date.hashCode()).split("")).mapToInt(Integer::parseInt).toArray()){
+            count+=temp;
+        }
+        user.setUserName("geust"+count);
         System.out.println("gameIn");
         if(roomRepository.countByRoomFlag(1)>0){
-            room = roomRepository.findOneByRoomFlag(1).orElseThrow();
+            room = roomRepository.findByRoomFlag(1).get(0);
             room.setRoomFlag(0);
             room.setSecondUser(user);
         }else{
             room = Room.builder()
+                    .roomName(RoomName.roomName[(int)((Math.random()*10000)%10)])
                     .roomFlag(1)
                     .roomNum(new Date().hashCode())
                     .firstUser(user)
@@ -120,6 +127,35 @@ public class MainController {
     }
 
 
+    @Transactional
+    @RequestMapping("/temp")
+    public String temp(Model model, User user){
 
-
+        Room room;
+        Date date = new Date();
+        int count=0;
+        for(int temp: Arrays.stream(String.valueOf(date.hashCode()<0?date.hashCode()*-1:date.hashCode()).split("")).mapToInt(Integer::parseInt).toArray()){
+            count+=temp;
+        }
+        user.setUserName("geust"+count);
+        System.out.println("gameIn");
+        if(roomRepository.countByRoomFlag(1)>0){
+            room = roomRepository.findByRoomFlag(1).get(0);
+            room.setRoomFlag(0);
+            room.setSecondUser(user);
+        }else{
+            room = Room.builder()
+                    .roomName(RoomName.roomName[(int)((Math.random()*10000)%10)])
+                    .roomFlag(1)
+                    .roomNum(new Date().hashCode())
+                    .firstUser(user)
+                    .firstUserLife(100)
+                    .secondUserLife(100)
+                    .build();
+        }
+        userRepository.save(user);
+        roomRepository.save(room);
+        model.addAttribute("room", room);
+        return "temp";
+    }
 }

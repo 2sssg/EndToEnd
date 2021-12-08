@@ -1,0 +1,16 @@
+#king{
+    width: 100vw;
+    height: 60vh;
+    background-size: 100% 100%;
+    background: url("../image/king.jpeg") center;
+}
+
+
+
+
+#main-inner-content{
+    background:lightblue;
+    opacity: 0.90;
+    float: left;
+    width: 50%;
+}
