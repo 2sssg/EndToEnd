@@ -37,7 +37,7 @@ public class APIService {
             String line = "";
             StringBuilder jsonString= new StringBuilder();
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                log.info(line);
                 jsonString.append(line);
             }
             br.close();
